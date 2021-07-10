@@ -30,8 +30,7 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./clover.xml
-          directory: ./coverage/
+          files: ./coverage/clover.xml
           flags: unittests
           name: codecov-umbrella
           verbose: true
