@@ -1,19 +1,20 @@
+import { Error as MongooseError } from 'mongoose'
 import { User } from '../models/user'
 /**
  *
  * @param {Request} _
  * @param {Response} res
  */
-export const index = (_, res) => {
+export const index = async (_, res) => {
   try {
-    User.find((error, users) => {
-      if (error) {
-        return res.status(400).json(error)
-      }
-      return res.json(users)
-    })
+    const users = await User.find()
+    res.json(users)
   } catch (error) {
-    return res.status(500).json(error)
+    if (error instanceof MongooseError) {
+      res.status(400).json(error.message)
+      return
+    }
+    res.status(500).json(error.message)
   }
 }
 
@@ -23,15 +24,19 @@ export const index = (_, res) => {
  * @param {Response} res
  * @param {User} user
  */
-export const store = async (req, res, user) => {
+export const store = async (req, res) => {
   try {
-    const newUser = await user.create({
+    const newUser = await User.create({
       firstName: req.body.firstName,
       userName: req.body.userName,
       email: req.body.email
     })
     res.status(201).json(newUser)
   } catch (error) {
-    res.status(500).json(error)
+    if (error instanceof MongooseError) {
+      res.status(400).json(error.message)
+      return
+    }
+    res.status(500).json(error.message)
   }
 }
