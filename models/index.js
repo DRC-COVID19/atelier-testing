@@ -15,11 +15,11 @@ const connect = (MONGO_URL) => {
 }
 
 if (process.env.NODE_ENV === 'testing') {
-  const MongoMemoryServer = require('mongodb-memory-server')
-  const mongoMemory = new MongoMemoryServer.MongoMemoryServer()
-  mongoMemory.getUri().then(item => {
-    connect(item)
-  })
+  (async () => {
+    const { MongoMemoryServer } = require('mongodb-memory-server')
+    const mongoMemory = await MongoMemoryServer.create()
+    connect(mongoMemory.getUri())
+  })()
 } else {
   const { MONGO_DB_NAME, MONGO_PASSWORD, MONGO_USER, MONGO_HOSTNAME, MONGO_SRV, MONGO_PORT } = process.env
   let MONGO_URL = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB_NAME}?authSource=admin&retryWrites=true&w=majority`
@@ -28,5 +28,4 @@ if (process.env.NODE_ENV === 'testing') {
   }
   connect(MONGO_URL)
 }
-
 module.exports = mongoose
