@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
+const toExport = {}
 const connect = (MONGO_URL) => {
-  console.log('MONGO_URL', MONGO_URL)
   mongoose
     .connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
@@ -19,6 +19,7 @@ if (process.env.NODE_ENV === 'testing') {
     const { MongoMemoryServer } = require('mongodb-memory-server')
     const mongoMemory = await MongoMemoryServer.create()
     connect(mongoMemory.getUri())
+    toExport.mongoMemory = mongoMemory
   })()
 } else {
   const { MONGO_DB_NAME, MONGO_PASSWORD, MONGO_USER, MONGO_HOSTNAME, MONGO_SRV, MONGO_PORT } = process.env
@@ -28,4 +29,5 @@ if (process.env.NODE_ENV === 'testing') {
   }
   connect(MONGO_URL)
 }
-module.exports = mongoose
+toExport.mongoose = mongoose
+export default toExport

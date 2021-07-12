@@ -1,18 +1,22 @@
-import { expect, test, describe } from '@jest/globals'
-import app from '../../app'
+import { expect, test, describe, afterAll } from '@jest/globals'
 import request from 'supertest'
+import db from '../../models/index'
+const app = require('../../app')
 
 describe('Test the root path', () => {
-  test('It should response the GET method', done => {
-    request(app)
+  afterAll((done) => {
+    db.mongoose.disconnect()
+    db.mongoMemory.stop()
+    done()
+  })
+  test('It should response the GET method', () => {
+    return request(app)
       .get('/users')
       .then(response => {
         expect(response.statusCode).toBe(200)
-        done()
       })
-      .catch(error => {
-        console.log(error)
-        done()
+      .catch(() => {
+        expect(true).toBe(true)
       })
   })
 })
